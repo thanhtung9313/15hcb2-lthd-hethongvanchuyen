@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+		<title>Google map</title>
+		<link href="asset/define/css/style.css" rel="stylesheet" />
+		<script src="asset/jquery-3.1.1.min.js"></script>
+		<script src="asset/define/js/func.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z364VG_nxaVKdQiLesW_yFK1UCb0PuM&libraries=places&callback=initAutocomplete"
+				async defer>
+		</script>
+		<script src="http://127.0.0.1:9000/socket.io/socket.io.js"></script>
+		<script>
+			var socket = io.connect('http://127.0.0.1:9000');
+			console.log(socket);
+			socket.on('hello', function (data) {
+				console.log(data);
+			});
+			socket.emit('tell name', { name : 'Lê Thành An' });
+			socket.on('reload biker', function (data) {
+				loadBiker();
+				alert(data.Text);
+				console.log(data);
+			});
+		</script>
+	</head>
+	<body>
+		<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+		<div id="map"></div>
+	</body>
+</html>

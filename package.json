@@ -1,0 +1,22 @@
+{
+  "name": "mapapi",
+  "version": "1.0.0",
+  "author": "1542201 <an.lethanh3@gmail.com>",
+  "description": "superatm nodejs",
+  "config": {
+    "port": "9000",
+    "dbcon": "mongodb://127.0.0.1:27017/map",
+    "apikey": "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI "
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "express": "^4.14.0",
+    "mongoose": "^4.7.4",
+    "querystring": "^0.2.0",
+    "socket.io": "^1.7.2"
+  }
+}
