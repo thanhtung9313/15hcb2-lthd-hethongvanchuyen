@@ -1,6 +1,6 @@
 =============REQUIRE TOOLS===========
-1/ Install nodejs
-2/ Install mongodb
+1/ Install nodejs : nodejs.org
+2/ Install mongodb : mongodb.com
 3/ Set environment in env.bat
 =============MONGODB==============
 1/ In folder mongodb 
