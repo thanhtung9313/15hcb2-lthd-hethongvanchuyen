@@ -143,6 +143,7 @@ router.route('/register-taixe')
 									HoTen: m.HoTen,
 									DienThoai: m.DienThoai,
 									DiaChi : m.DiaChi,
+									LoaiXe : m.LoaiXe,
 									DienThoai: m.DienThoai,
 									lat: location.lat,
 									lng: location.lng
@@ -154,7 +155,7 @@ router.route('/register-taixe')
 									}
 									else {
 										res.json({ Error : 0, Text : 'Đăng kí thành công' });
-										io.emit('reload lai xe', { Text: 'Có lái xe mới' });
+										io.emit('reload tai xe', { Text: 'Có tài xế mới' });
 									}
 								});
 							}
@@ -202,8 +203,10 @@ router.route('/taixe')
 					var arr =[];
 					infos.forEach(function(info,index){
 						arr[index] = {
-							name:info.HoTen,
-							phone:info.DienThoai,
+							HoTen:info.HoTen,
+							DienThoai:info.DienThoai,
+							LoaiXe:info.LoaiXe,
+							DiaChi:info.DiaChi,
 							location:{
 								lat:parseFloat(info.lat),
 								lng:parseFloat(info.lng)
@@ -243,9 +246,9 @@ router.route('/guest')
 					var arr =[];
 					infos.forEach(function(info,index){
 						arr[index] = {
-							DiaChi : m.DiaChi,
-							GhiChu: m.GhiChu,
-							LoaiXe: m.LoaiXe,
+							DiaChi : info.DiaChi,
+							GhiChu: info.GhiChu,
+							LoaiXe: info.LoaiXe,
 							location:{
 								lat:parseFloat(info.lat),
 								lng:parseFloat(info.lng)

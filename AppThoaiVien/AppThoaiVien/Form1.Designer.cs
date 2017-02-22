@@ -103,6 +103,7 @@
 			// 
 			// Form1
 			// 
+			this.AcceptButton = this.btnGui;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(485, 230);
@@ -115,6 +116,7 @@
 			this.Controls.Add(this.label1);
 			this.Name = "Form1";
 			this.Text = "App thoại viên";
+			this.Load += new System.EventHandler(this.Form1_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

@@ -1,8 +1,9 @@
 var map;
 var infowindow;
-var pyrmont = {lat: -33.867, lng: 151.195};
+var pyrmont = {lat: 10.762469, lng: 106.6826266};
 var markers = [];
 var bikers = [];
+var guests = [];
 
 function cleanMaker(array){
 	// Clear out the old markers.
@@ -15,7 +16,7 @@ function cleanMaker(array){
 function initAutocomplete() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: pyrmont,
-		zoom: 10,
+		zoom: 17,
 		mapTypeId: 'roadmap'
 	});
 	infowindow = new google.maps.InfoWindow();
@@ -67,7 +68,9 @@ function initAutocomplete() {
 			} else {
 				bounds.extend(place.geometry.location);
 			}
+	
 			loadBiker();
+			loadGuest();
 		});
 		map.fitBounds(bounds);
 	});
@@ -88,7 +91,7 @@ function loadBiker() {
 		if (data.Error === 0) {
 			cleanMaker(bikers);			
 			data.Data.forEach(function(biker){
-				var image = 'biker.png';
+				var image = biker.LoaiXe === 0? 'biker.png':'premium.png';
 				var icon = {
 					url: image,
 					size: new google.maps.Size(50, 50),
@@ -104,7 +107,55 @@ function loadBiker() {
 				bikers.push(marker);
 
 				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(biker.name+' - '+biker.phone);
+					infowindow.setContent(biker.HoTen+' - '+biker.DienThoai +' - '+biker.DiaChi);
+					infowindow.open(map, this);
+				});
+			});
+			map.setZoom(17);
+		}
+		else {
+			alert(data.Text);
+		}
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+		console.log(jqXHR);
+		console.log(textStatus);
+		console.log(errorThrown);
+	});
+}
+
+function loadGuest() {
+	var URL = "http://localhost:9000/";
+    var _url = URL + "api/map/guest";
+    var jqxhr = $.ajax({
+        url: _url,
+        type: 'GET',
+        datatype: 'json',
+        contentType: 'application/json',
+        timeout: 30 * 1000
+    })
+	.done(function (data, textStatus, jqXHR) {
+		console.log(data);
+		if (data.Error === 0) {
+			cleanMaker(guests);			
+			data.Data.forEach(function(guest){
+				var image = guest.LoaiXe === 0? 'guest.png':'pguest.png';
+				var icon = {
+					url: image,
+					size: new google.maps.Size(50, 50),
+					origin: new google.maps.Point(0, 0),
+					anchor: new google.maps.Point(0, 0),
+					scaledSize: new google.maps.Size(40, 40)
+				};
+				var marker = new google.maps.Marker({
+					map: map,
+					icon: icon,
+					position: guest.location
+				});
+				guests.push(marker);
+
+				google.maps.event.addListener(marker, 'click', function() {
+					infowindow.setContent(guest.DiaChi+' - '+guest.GhiChu);
 					infowindow.open(map, this);
 				});
 			});
