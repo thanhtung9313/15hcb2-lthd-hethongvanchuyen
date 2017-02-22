@@ -75,7 +75,7 @@ function initAutocomplete() {
 
 function loadBiker() {
 	var URL = "http://localhost:9000/";
-    var _url = URL + "api/map/biker";
+    var _url = URL + "api/map/taixe";
     var jqxhr = $.ajax({
         url: _url,
         type: 'GET',
