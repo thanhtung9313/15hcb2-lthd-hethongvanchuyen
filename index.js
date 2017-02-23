@@ -6,6 +6,7 @@ var querystring = require('querystring');
 var https = require('https');
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var Promise = require('promise');
 
 var mongoose   = require('mongoose');
 var dbcon=process.env.npm_package_config_dbcon;
@@ -99,7 +100,7 @@ router.route('/find-taixe')
 	var m = req.body;
 	
 	var des='';
-	TaiXe.find({TinhTrang:0},
+	TaiXe.find({TinhTrang:0,LoaiXe:m.LoaiXe},
 		function (err, infos) {
 			if (err) {
 				console.log(err);
@@ -162,35 +163,43 @@ router.route('/find-taixe')
 									data.rows[0].elements[i] = data.rows[0].elements[min];
 									data.rows[0].elements[min] = n;
 								}
-								var check = false;
-								function sleep(milliseconds) {
-									var start = new Date().getTime();
-									for (var i = 0; i < 1e7; i++) {
-										if ((new Date().getTime() - start) > milliseconds){
-											break;
-										}
-									}
-								}
-								for(var i = 0;i < infos.length;i++){
-									var s=clients[infos[i].DienThoai];
-									io.sockets.connected[s].emit('don khach', {Text: m.DiaChi});
-									io.sockets.connected[s].on('chap nhan don khach', function(data){
-										if(data.TinhTrang === 1){
-											check = true;
-											console.log("1");
-										}
+								
+								var promise;
+								var send=function(i,max){
+									promise = new Promise (function (resolve, reject) {
+										var s=clients[infos[i].DienThoai];
+										io.sockets.connected[s].emit('don khach', {Text: m.DiaChi});
+										io.sockets.connected[s].on('chap nhan don khach', function(data){
+											if(data.TinhTrang === 1){
+												resolve(true);
+											}
+											else{
+												reject(false);
+											}
+										});
 									});
-									if(check == true) {
-										break;
-									}
+									promise.then((value)=>{
+										TaiXe.update({ DienThoai: m.DienThoai },{ TinhTrang: 1 },function(err) {
+											if (err) {
+												console.log(err);
+												res.json({
+													Error : 1,
+													Text : "Có lỗi xảy ra vui lòng thử lại"
+												});
+											}
+											else{
+												res.json({ Error : 0, Text : "Tài xế đang tới" });
+											}
+										});
+									},(error) => {
+										if(i < max-1)
+											send(i+1,max);
+										else
+											res.json({ Error : 0, Text : "Các tài xế đang bận" });
+									});
 								}
-								console.log("2");
-								if(check == true) {
-								res.json({ Error : 0, Text : "Tài xế đang tới" });
-								}
-								else {
-									res.json({ Error : 0, Text : "Các tài xế đang bận" });
-								}
+								console.log(infos.length);
+								send(0,infos.length);
 							}
 							else{
 								res.json({ Error : 1, Text : "Địa chỉ không tồn tại" });
