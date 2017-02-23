@@ -20,12 +20,10 @@
 			socket.emit('tell name', { name : 'Lê Thành An' });
 			socket.on('reload tai xe', function (data) {
 				loadBiker();
-				alert(data.Text);
 				console.log(data);
 			});
 			socket.on('reload guest', function (data) {
 				loadGuest();
-				alert(data.Text);
 				console.log(data);
 			});
 		</script>

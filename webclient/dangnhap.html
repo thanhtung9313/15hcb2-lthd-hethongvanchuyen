@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>App lái xe</title>
+    <script src="asset/jquery-3.1.1.min.js"></script>
+    <script src="asset/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="asset/myfunction2.js"></script>
+    <link href="asset/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+	<script src="http://127.0.0.1:9000/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io.connect('http://127.0.0.1:9000/',{reconnect: true});
+		socket.on('don khach',function(data){
+			if (confirm('Hãy đón khách tại địa chỉ : ' + data.Text)) {
+				socket.emit('chap nhan don khach',{TinhTrang:1});
+			} else {
+				var f = setTimeout(function(){
+				socket.emit('chap nhan don khach',{TinhTrang:0});
+				stop();},5000);
+				function stop(){
+				clearTimeout(f);}
+			}
+		});
+		function loginsend(s){
+			socket.emit('login',{DienThoai:s});
+		}
+		function logoutsend(s){
+			socket.emit('logout',{DienThoai:s});
+		}
+	</script>
+</head>
+<body>
+    <div class="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Lái xe</div>
+            <div class="panel-body">
+				<div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-signal"></i></span>
+                    <input id="txt_SDT" type="text" class="form-control" placeholder="Số điện thoại" value="0123456789" />
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input id="txt_Ten" type="text" class="form-control" placeholder="Tên" value="Lê Thành An" />
+                </div>
+				<div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-map-marker"></i></span>
+                    <input id="txt_DiaChi" type="text" class="form-control" placeholder="Địa chỉ" value="227 Nguyễn Văn Cừ Quận 5 TPHCM" />
+                </div>
+				<div class="input-group">
+                    <label class="radio-inline"><input type="radio" name="optradio" value="0" checked>Xe thường</label>
+					<label class="radio-inline"><input type="radio" name="optradio" value="1">Xe premium</label>
+                </div>
+				<div class="panel-body">
+                      <button id="btn_DangNhap" type="button" class="btn btn-default">Đăng nhập</button>
+					  <button id="btn_CapNhat" type="button" class="btn btn-default">Cập nhật địa chỉ</button>
+					   <button id="btn_DangXuat" type="button" class="btn btn-default">Đăng xuất</button>
+				</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

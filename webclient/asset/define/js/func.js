@@ -68,12 +68,12 @@ function initAutocomplete() {
 			} else {
 				bounds.extend(place.geometry.location);
 			}
-	
-			loadBiker();
-			loadGuest();
 		});
 		map.fitBounds(bounds);
 	});
+	
+	loadBiker();
+	loadGuest();
 }
 
 function loadBiker() {
