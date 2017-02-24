@@ -1,26 +1,27 @@
 var TaiXe = require('../model/taixe');
 var Khach = require('../model/khach');
 var LoaiXe = require('../model/loaixe');
+var Diem = require('../model/diem');
+var LichSu = require('../model/lichsu');
 
 module.exports = {
 	init : function(){
 		
-		// TaiXe.remove({}, function (err) {
-		  // if (err) console.log(err);
-		// });
+		TaiXe.remove({}, function (err) {
+		  if (err) console.log(err);
+		});
 		
-		/*TaiXe.create({ 
-		"LoaiXe" : 0,
-		"HoTen": "Nguyễn Văn A",
-		"DienThoai": "090123451",
-		"DiaChi": "227 Nguyễn Văn Cừ Quận 5 TPHCM",
-		"TinhTrang": 0, 
-		"lat" : "10.762469",
-		"lng" : "106.6826266" },function (err) { if(err) console.log(err);});*/
+		Khach.remove({}, function (err) {
+		  if (err) console.log(err);
+		});
 		
-		// Khach.remove({}, function (err) {
-		  // if (err) console.log(err);
-		// });
+		Diem.remove({}, function (err) {
+		  if (err) console.log(err);
+		});
+		
+		LichSu.remove({}, function (err) {
+		  if (err) console.log(err);
+		});
 		
 		LoaiXe.remove({}, function (err) {
 		  if (err) console.log(err);

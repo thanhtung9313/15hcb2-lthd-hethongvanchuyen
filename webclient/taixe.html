@@ -6,7 +6,7 @@
     <title>App lái xe</title>
     <script src="asset/jquery-3.1.1.min.js"></script>
     <script src="asset/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-    <script src="asset/myfunction2.js"></script>
+    <script src="asset/define/js/myfunction.js"></script>
     <link href="asset/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
 	<script src="http://127.0.0.1:9000/socket.io/socket.io.js"></script>
 	<script>
@@ -39,6 +39,10 @@
                     <span class="input-group-addon"><i class="glyphicon glyphicon-signal"></i></span>
                     <input id="txt_SDT" type="text" class="form-control" placeholder="Số điện thoại" value="0123456789" />
                 </div>
+				<div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    <input id="txt_MatKhau" type="password" class="form-control" placeholder="Số điện thoại" value="1234567890" />
+                </div>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                     <input id="txt_Ten" type="text" class="form-control" placeholder="Tên" value="Lê Thành An" />
@@ -52,9 +56,10 @@
 					<label class="radio-inline"><input type="radio" name="optradio" value="1">Xe premium</label>
                 </div>
 				<div class="panel-body">
-                      <button id="btn_DangNhap" type="button" class="btn btn-default">Đăng nhập</button>
-					  <button id="btn_CapNhat" type="button" class="btn btn-default">Cập nhật địa chỉ</button>
-					   <button id="btn_DangXuat" type="button" class="btn btn-default">Đăng xuất</button>
+					<button id="btn_DangKy" type="button" class="btn btn-default">Đăng ký</button>
+					<button id="btn_DangNhap" type="button" class="btn btn-default">Đăng nhập</button>
+					<button id="btn_CapNhat" type="button" class="btn btn-default">Cập nhật địa chỉ</button>
+					<button id="btn_DangXuat" type="button" class="btn btn-default">Đăng xuất</button>
 				</div>
             </div>
         </div>

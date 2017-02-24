@@ -34,7 +34,14 @@ namespace AppThoaiVien
 					new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
 				var res = c.PostAsJsonAsync(URL + "register",
-					new { DiaChi = txtDiaChi.Text, GhiChu = txtGhiChu.Text, LoaiXe = cbbLoai.SelectedIndex}).Result;
+					new
+					{
+						LoaiXe = cbbLoai.SelectedIndex,
+						HoTen = txtHoTen.Text,
+						DienThoai = txtSDT.Text,
+						DiaChi = txtDiaChi.Text,
+						GhiChu = txtGhiChu.Text
+					}).Result;
 				if (res.StatusCode == System.Net.HttpStatusCode.OK)
 				{
 					var info = res.Content.ReadAsAsync<MyResult>().Result;

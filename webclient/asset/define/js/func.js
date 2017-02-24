@@ -107,7 +107,7 @@ function loadBiker() {
 				bikers.push(marker);
 
 				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(biker.HoTen+' - '+biker.DienThoai +' - '+biker.DiaChi);
+					infowindow.setContent(biker.HoTen);
 					infowindow.open(map, this);
 				});
 			});
@@ -150,16 +150,50 @@ function loadGuest() {
 				var marker = new google.maps.Marker({
 					map: map,
 					icon: icon,
+					draggable: true,
+					editable: true,
 					position: guest.location
 				});
 				guests.push(marker);
 
 				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(guest.DiaChi+' - '+guest.GhiChu);
+					infowindow.setContent(guest.HoTen);
 					infowindow.open(map, this);
+				});
+				
+				google.maps.event.addListener(marker, 'dragend', function() {
+					var data = { lat: this.getPosition().lat(), lng: this.getPosition().lng(), khach: guest}
+					updateGuest(data);
 				});
 			});
 			map.setZoom(17);
+		}
+		else {
+			alert(data.Text);
+		}
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+		console.log(jqXHR);
+		console.log(textStatus);
+		console.log(errorThrown);
+	});
+}
+
+function updateGuest(_data) {
+	var URL = "http://localhost:9000/";
+    var _url = URL + "api/map/update-guest";
+    var jqxhr = $.ajax({
+        url: _url,
+        type: 'POST',
+		data: JSON.stringify(_data),
+        datatype: 'json',
+        contentType: 'application/json',
+        timeout: 30 * 1000
+    })
+	.done(function (data, textStatus, jqXHR) {
+		console.log(data);
+		if (data.Error === 0) {
+			alert(data.Text);
 		}
 		else {
 			alert(data.Text);
