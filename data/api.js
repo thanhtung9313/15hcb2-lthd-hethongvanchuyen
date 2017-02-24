@@ -3,7 +3,7 @@ var Khach = require('../model/khach');
 var LoaiXe = require('../model/loaixe');
 var Diem = require('../model/diem');
 var LichSu = require('../model/lichsu');
-var Promise = require('promise');
+var Promise = require('bluebird');
 var querystring = require('querystring');
 const https = require('https');
 
