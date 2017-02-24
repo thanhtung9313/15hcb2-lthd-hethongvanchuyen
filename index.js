@@ -6,7 +6,7 @@ var querystring = require('querystring');
 var https = require('https');
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var Promise = require('promise');
+var Promise = require('bluebird');
 
 var mongoose   = require('mongoose');
 var dbcon=process.env.npm_package_config_dbcon;
