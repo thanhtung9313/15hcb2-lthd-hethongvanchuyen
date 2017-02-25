@@ -96,7 +96,7 @@ function DangXuat(_phone,_pass) {
         });
 }
 function CapNhat(_phone,_pass, _address) {
-    var _url = URL + "api/map/update";
+    var _url = URL + "api/map/update-taixe";
     var _data = {
 		DienThoai: _phone,
 		MatKhau: _pass,

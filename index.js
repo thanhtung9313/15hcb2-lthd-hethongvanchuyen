@@ -104,6 +104,7 @@ router.route('/register')
 												Error : 0,
 												Text : "Thêm khách thành công"
 											});
+											io.emit('reload guest', { Text: 'Có khách mới' });
 										}
 									});
 								}
@@ -295,6 +296,52 @@ router.route('/taixe')
 	);
 });
 
+router.route('/update-taixe')
+.post(function(req, res) {
+	var m = req.body;
+	TaiXe.find({DienThoai:m.DienThoai,MatKhau: m.MatKhau})
+	.exec(function (err,info) {
+			if (err) {
+				console.log(err);
+				res.json({
+					Error : 1,
+					Text : "Có lỗi xảy ra vui lòng thử lại"
+				});
+			}
+			else{
+				if(info!=null){
+					api.GeoCoding(m,function(data){
+						var rs = data;
+						var location = rs.Data.results[0].geometry.location;
+						TaiXe.update({DienThoai:m.DienThoai,MatKhau: m.MatKhau},{lat:location.lat,lng:location.lng})
+						.exec(function(err){
+							if(err){
+								console.log(err);
+								res.json({
+									Error : 1,
+									Text : "Có lỗi xảy ra vui lòng thử lại"
+								});
+							}
+							else{
+								res.json({
+									Error : 0,
+									Text : "Cập nhật địa chỉ thành công"
+								});
+							}
+						});
+					});
+				}
+				else{
+					res.json({
+						Error : 1,
+						Text : "Tài khoản không đúng"
+					});
+				}
+			}
+		}
+	);
+});
+
 router.route('/guest')
 .get(function(req, res) {
 	var m = req.body;
@@ -334,6 +381,52 @@ router.route('/guest')
 					res.json({
 						Error : 0,
 						Data : arr
+					});
+				}
+			}
+		}
+	);
+});
+
+router.route('/update-guest')
+.post(function(req, res) {
+	var m = req.body;
+	LichSu.find({DienThoai:m.DienThoai,MatKhau: m.MatKhau})
+	.exec(function (err,info) {
+			if (err) {
+				console.log(err);
+				res.json({
+					Error : 1,
+					Text : "Có lỗi xảy ra vui lòng thử lại"
+				});
+			}
+			else{
+				if(info!=null){
+					api.GeoCoding(m,function(data){
+						var rs = data;
+						var location = rs.Data.results[0].geometry.location;
+						TaiXe.update({DienThoai:m.DienThoai,MatKhau: m.MatKhau},{lat:location.lat,lng:location.lng})
+						.exec(function(err){
+							if(err){
+								console.log(err);
+								res.json({
+									Error : 1,
+									Text : "Có lỗi xảy ra vui lòng thử lại"
+								});
+							}
+							else{
+								res.json({
+									Error : 0,
+									Text : "Cập nhật địa chỉ thành công"
+								});
+							}
+						});
+					});
+				}
+				else{
+					res.json({
+						Error : 1,
+						Text : "Tài khoản không đúng"
 					});
 				}
 			}
