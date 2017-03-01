@@ -94,6 +94,7 @@ router.route('/register')
 									});
 									l.save(function(err){
 										if(err){
+											console.log(err);
 											res.json({
 												Error : 1,
 												Text : "Có lỗi xảy ra vui lòng thử lại"
@@ -136,68 +137,22 @@ router.route('/find-taixe')
 .post(function(req, res) {
 	var m = req.body;
 	var des='';
-	TaiXe.find({TinhTrang:0,LoaiXe:m.LoaiXe})
-	.limit(parseInt(process.env.npm_package_config_limit))
-	.exec(
-		function (err, infos) {
-			if (err) {
-				console.log(err);
-				res.json({
-					Error : 1,
-					Text : "Có lỗi xảy ra vui lòng thử lại"
-				});
-			}
-			else{
-				if(infos.length === 0){
-					LichSu.findOne({TinhTrang:0})
-					.sort( { 'Ngay' : -1 })
-					.populate('Diem')
-					.populate('Khach')
-					.where('Khach.DienThoai').eq(m.DienThoai)
-					.exec(function (err, info) {
-						if(info != null){
-							LichSu.create({Khach:info.Khach._id,Diem:info.Diem._id,TinhTrang:2},function(err){
-								if(err){
-									console.log(err);
-									res.json({
-										Error : 1,
-										Text : "Có lỗi xảy ra vui lòng thử lại"
-									});
-								}
-								else{
-									LichSu.create({Khach:info.Khach._id,Diem:info.Diem._id,TinhTrang:3},function(err){
-										if(err){
-											console.log(err);
-											res.json({
-												Error : 1,
-												Text : "Có lỗi xảy ra vui lòng thử lại"
-											});
-										}
-										else{
-											res.json({
-												Error : 1,
-												Text : 'Chưa có biker nào'
-											});
-										}
-									});
-								}
-							});
-						}
-						else{
-							res.json({
-								Error : 1,
-								Text : 'Điện thoại không tồn tại'
-							});
-						}
-					});
-				}
-				else {
-					LichSu.findOne({TinhTrang:-1})
-					.populate('Diem')
-					.populate('Khach')
-					.where('Khach.DienThoai').eq(m.DienThoai)
-					.exec(function (err, ls) {
-						if(err){
+	Khach.findOne({DienThoai:m.DienThoai})
+	.exec(function(err,kh){
+		if(err){
+			console.log(err);
+			res.json({
+				Error : 1,
+				Text : "Có lỗi xảy ra vui lòng thử lại"
+			});
+		}
+		else{
+			if(kh!=null){
+				TaiXe.find({TinhTrang:0,LoaiXe:m.LoaiXe})
+				.limit(parseInt(process.env.npm_package_config_limit))
+				.exec(
+					function (err, infos) {
+						if (err) {
 							console.log(err);
 							res.json({
 								Error : 1,
@@ -205,8 +160,51 @@ router.route('/find-taixe')
 							});
 						}
 						else{
-							if(ls != null){
-								LichSu.create({Khach:ls.Khach._id,Diem:ls.Diem._id,TinhTrang:2},function(err){
+							if(infos.length === 0){
+								LichSu.findOne({Khach:kh._id,TinhTrang:0})
+								.sort( { 'Ngay' : -1 })
+								.populate('Diem')
+								.exec(function (err, info) {
+									if(info != null){
+										LichSu.create({Khach:kh._id,Diem:info.Diem._id,TinhTrang:2},function(err){
+											if(err){
+												console.log(err);
+												res.json({
+													Error : 1,
+													Text : "Có lỗi xảy ra vui lòng thử lại"
+												});
+											}
+											else{
+												LichSu.create({Khach:kh._id,Diem:info.Diem._id,TinhTrang:3},function(err){
+													if(err){
+														console.log(err);
+														res.json({
+															Error : 1,
+															Text : "Có lỗi xảy ra vui lòng thử lại"
+														});
+													}
+													else{
+														res.json({
+															Error : 1,
+															Text : 'Chưa có biker nào'
+														});
+													}
+												});
+											}
+										});
+									}
+									else{
+										res.json({
+											Error : 1,
+											Text : 'Điện thoại không tồn tại'
+										});
+									}
+								});
+							}
+							else {
+								LichSu.findOne({Khach:kh._id,TinhTrang:-1})
+								.populate('Diem')
+								.exec(function (err, ls) {
 									if(err){
 										console.log(err);
 										res.json({
@@ -215,95 +213,114 @@ router.route('/find-taixe')
 										});
 									}
 									else{
-										var arr =[];
-										infos.forEach(function(info,index){
-											des+=info.lat + ','+info.lng+'|';
-										});
-										des=des.substr(0,des.length);
-										api.DistanceMatrix(ls,des,function(rs){
-											var data = rs.Data;
-											for(var i = 0;i < infos.length;i++){
-											var min = i;
-											for(var j=i+1; j <data.rows[0].elements.length-1;j++){
-												var a = data.rows[0].elements[min];
-												var b = data.rows[0].elements[j];
-												if(a.distance.value > b.distance.value) {
-													min = j;
-												}
-											}
-											var n = infos[i];
-											infos[i] = infos[min];
-											infos[min] = n;
-											n = data.rows[0].elements[i];
-											data.rows[0].elements[i] = data.rows[0].elements[min];
-											data.rows[0].elements[min] = n;
-											}
-											var promise;
-											var send=function(i,max){
-												promise = new Promise (function (resolve, reject) {
-													var s=clients[infos[i].DienThoai];
-													io.sockets.connected[s].emit('don khach', {Text: ls.Diem.DiaChi});
-													io.sockets.connected[s].on('chap nhan don khach', function(data){
-														if(data.TinhTrang === 1){
-															resolve(true);
-														}
-														else{
-															reject(false);
-														}
+										if(ls != null){
+											LichSu.create({Khach:kh._id,Diem:ls.Diem._id,TinhTrang:2},function(err){
+												if(err){
+													console.log(err);
+													res.json({
+														Error : 1,
+														Text : "Có lỗi xảy ra vui lòng thử lại"
 													});
-												});
-												promise.then(
-													(value)=>{
-														TaiXe.update({ DienThoai: m.DienThoai },{ TinhTrang: 1 },function(err) {
-															if (err) {
-																res.json({ Error : 1, Text : "Có lỗi xảy ra vui lòng thử lại" });
+												}
+												else{
+													var arr =[];
+													infos.forEach(function(info,index){
+														des+=info.lat + ','+info.lng+'|';
+													});
+													des=des.substr(0,des.length);
+													api.DistanceMatrix(ls,des,function(rs){
+														var data = rs.Data;
+														for(var i = 0;i < infos.length;i++){
+														var min = i;
+														for(var j=i+1; j <data.rows[0].elements.length-1;j++){
+															var a = data.rows[0].elements[min];
+															var b = data.rows[0].elements[j];
+															if(a.distance.value > b.distance.value) {
+																min = j;
 															}
-															else{
-																LichSu.create({Khach:ls.Khach._id,Diem:ls.Diem._id,TinhTrang:1},function(err){
-																	if(err){
-																		console.log(err);
+														}
+														var n = infos[i];
+														infos[i] = infos[min];
+														infos[min] = n;
+														n = data.rows[0].elements[i];
+														data.rows[0].elements[i] = data.rows[0].elements[min];
+														data.rows[0].elements[min] = n;
+														}
+														var promise;
+														var send=function(i,max){
+															promise = new Promise (function (resolve, reject) {
+																var s=clients[infos[i].DienThoai];
+																io.sockets.connected[s].emit('don khach', {Text: ls.Diem.DiaChi});
+																io.sockets.connected[s].on('chap nhan don khach', function(data){
+																	if(data.TinhTrang === 1){
+																		resolve(true);
 																	}
 																	else{
-																		res.json({ Error : 0, Text : "Tài xế đang tới" });
+																		reject(false);
 																	}
 																});
-															}
-														});
-													},
-													(error) => {
-														if(i < max-1)
-															send(i+1,max);
-														else
-														{
-															LichSu.create({Khach:ls.Khach._id,Diem:ls.Diem._id,TinhTrang:3},function(err){
-																if(err){
-																	console.log(err);
-																}
-																else{
-																	res.json({ Error : 0, Text : "Các tài xế đang bận" });
-																}
 															});
+															promise.then(
+																(value)=>{
+																	TaiXe.update({ DienThoai: m.DienThoai },{ TinhTrang: 1 },function(err) {
+																		if (err) {
+																			res.json({ Error : 1, Text : "Có lỗi xảy ra vui lòng thử lại" });
+																		}
+																		else{
+																			LichSu.create({Khach:kh._id,Diem:ls.Diem._id,TinhTrang:1},function(err){
+																				if(err){
+																					console.log(err);
+																				}
+																				else{
+																					res.json({ Error : 0, Text : "Tài xế đang tới" });
+																				}
+																			});
+																		}
+																	});
+																},
+																(error) => {
+																	if(i < max-1)
+																		send(i+1,max);
+																	else
+																	{
+																		LichSu.create({Khach:kh._id,Diem:ls.Diem._id,TinhTrang:3},function(err){
+																			if(err){
+																				console.log(err);
+																			}
+																			else{
+																				res.json({ Error : 0, Text : "Các tài xế đang bận" });
+																			}
+																		});
+																	}
+																}
+															);
 														}
-													}
-												);
-											}
-											send(0,infos.length);		
-										});
+														send(0,infos.length);		
+													});
+												}
+											});
+										}
+										else{
+											res.json({
+												Error : 1,
+												Text : 'Điện thoại không tồn tại'
+											});
+										}
 									}
 								});
 							}
-							else{
-								res.json({
-									Error : 1,
-									Text : 'Điện thoại không tồn tại'
-								});
-							}
 						}
-					});
-				}
+					}
+				);
+			}
+			else{
+				res.json({
+					Error : 1,
+					Text : 'Điện thoại không tồn tại'
+				});
 			}
 		}
-	);
+	});
 });
 
 router.route('/register-taixe')
@@ -510,58 +527,79 @@ router.route('/guest')
 router.route('/history-guest')
 .post(function(req, res) {
 	var m = req.body;
-	console.log(m);
-	LichSu.find()
-	.populate('Diem')
-	.populate({path: 'Khach', model: Khach, select: '-_id DienThoai',match: {DienThoai: {$eq: m.DienThoai}}})
-	.where("Khach").ne(null)
-	.sort( { 'Ngay' : 1 })
-	.exec(function(err,infos){
+	Khach.findOne({DienThoai:m.DienThoai})
+	.exec(function(err,info){
 		if(err){
 			console.log(err);
+			res.json({
+				Error : 1,
+				Text : "Có lỗi xảy ra vui lòng thử lại"
+			});
 		}
 		else{
-			console.log(infos);
-			if(infos.length === 0){
+			if(info!=null){
+			LichSu.find({Khach:info._id})
+				.populate('Diem')
+				.sort( { 'Ngay' : 1 })
+				.exec(function(err,infos){
+					if(err){
+						console.log(err);
+						res.json({
+							Error : 1,
+							Text : "Có lỗi xảy ra vui lòng thử lại"
+						});
+					}
+					else{
+						if(infos.length === 0){
+							res.json({
+								Error : 1,
+								Text : 'Điện thoại không tồn tại'
+							});
+						}
+						else{
+							var arr =[];
+							infos.forEach(function(info,index){
+								var s;
+								switch(info.TinhTrang){
+									case -1:
+										s='Địa chỉ gốc';
+										break;
+									case 0:
+										s='Đã xác định lại tọa độ';
+										break;
+									case 1:
+										s='Có xe';
+										break;
+									case 2:
+										s='Đang tìm xe';
+										break;
+									case 3:
+									s='Không có xe nhận';
+									break;
+								}
+								arr[index] = {
+									DiaChi: info.Diem.DiaChi,
+									TinhTrang: s,
+									Ngay: info.Ngay
+								};
+							});
+							res.json({
+								Error : 0,
+								Data : arr
+							});
+						}
+					}
+				});
+			}
+			else{
 				res.json({
 					Error : 1,
 					Text : 'Điện thoại không tồn tại'
 				});
 			}
-			else{
-				var arr =[];
-				infos.forEach(function(info,index){
-					var s;
-					switch(info.TinhTrang){
-						case -1:
-							s='Địa chỉ gốc';
-							break;
-						case 0:
-							s='Đã xác định lại tọa độ';
-							break;
-						case 1:
-							s='Có xe';
-							break;
-						case 2:
-							s='Đang tìm xe';
-							break;
-						case 3:
-						s='Không có xe nhận';
-						break;
-					}
-					arr[index] = {
-						DiaChi: info.Diem.DiaChi,
-						TinhTrang: s,
-						Ngay: info.Ngay
-					};
-				});
-				res.json({
-					Error : 0,
-					Data : arr
-				});
-			}
 		}
 	});
+	
 });
 
 router.route('/update-guest')
