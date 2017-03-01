@@ -15,18 +15,7 @@ namespace AppThoaiVien
 	public partial class Form1 : Form
 	{
 		private String URL = ConfigurationManager.AppSettings["mapapi"].ToString();
-		class MyResult
-		{
-			public int Error { get; set; }
-			public String Text { get; set; }
-			public List<Data> Data { get; set; }
-		}
-		class Data
-		{
-			public String DiaChi { get; set; }
-			public String TinhTrang { get; set; }
-			public String Ngay { get; set; }
-		}
+		
 		public Form1()
 		{
 			InitializeComponent();
@@ -116,13 +105,8 @@ namespace AppThoaiVien
 					var info = res.Content.ReadAsAsync<MyResult>().Result;
 					if (info.Error == 0)
 					{
-						string s = "";
-						foreach (var item in info.Data)
-						{
-							s += item.Ngay + " " + item.TinhTrang + " " + item.DiaChi;
-							s += System.Environment.NewLine;
-						}
-						MessageBox.Show(s, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						var frm = new frmLichSu(info);
+						frm.ShowDialog();
 					}
 					else
 					{

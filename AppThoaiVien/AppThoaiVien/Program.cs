@@ -6,6 +6,18 @@ using System.Windows.Forms;
 
 namespace AppThoaiVien
 {
+	public class MyResult
+	{
+		public int Error { get; set; }
+		public String Text { get; set; }
+		public List<Data> Data { get; set; }
+	}
+	public class Data
+	{
+		public String DiaChi { get; set; }
+		public String TinhTrang { get; set; }
+		public String Ngay { get; set; }
+	}
 	static class Program
 	{
 		/// <summary>

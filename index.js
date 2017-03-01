@@ -152,7 +152,8 @@ router.route('/find-taixe')
 					LichSu.findOne({TinhTrang:0})
 					.sort( { 'Ngay' : -1 })
 					.populate('Diem')
-					.populate('Khach',null,{DienThoai: { $eq: m.DienThoai }})
+					.populate('Khach')
+					.where('Khach.DienThoai').eq(m.DienThoai)
 					.exec(function (err, info) {
 						if(info != null){
 							LichSu.create({Khach:info.Khach._id,Diem:info.Diem._id,TinhTrang:2},function(err){
@@ -193,7 +194,8 @@ router.route('/find-taixe')
 				else {
 					LichSu.findOne({TinhTrang:-1})
 					.populate('Diem')
-					.populate('Khach',null,{DienThoai: { $eq: m.DienThoai }})
+					.populate('Khach')
+					.where('Khach.DienThoai').eq(m.DienThoai)
 					.exec(function (err, ls) {
 						if(err){
 							console.log(err);
@@ -508,15 +510,18 @@ router.route('/guest')
 router.route('/history-guest')
 .post(function(req, res) {
 	var m = req.body;
-	LichSu.find({})
+	console.log(m);
+	LichSu.find()
 	.populate('Diem')
-	.populate('Khach',null,{DienThoai:{$eq:m.DienThoai}})
+	.populate({path: 'Khach', model: Khach, select: '-_id DienThoai',match: {DienThoai: {$eq: m.DienThoai}}})
+	.where("Khach").ne(null)
 	.sort( { 'Ngay' : 1 })
 	.exec(function(err,infos){
 		if(err){
 			console.log(err);
 		}
 		else{
+			console.log(infos);
 			if(infos.length === 0){
 				res.json({
 					Error : 1,

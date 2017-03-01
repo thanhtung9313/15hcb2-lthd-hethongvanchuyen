@@ -4,6 +4,8 @@ var pyrmont = {lat: 10.762469, lng: 106.6826266};
 var markers = [];
 var bikers = [];
 var guests = [];
+var geocoder;
+
 
 function cleanMaker(array){
 	// Clear out the old markers.
@@ -19,6 +21,8 @@ function initAutocomplete() {
 		zoom: 17,
 		mapTypeId: 'roadmap'
 	});
+	geocoder = new google.maps.Geocoder();
+
 	infowindow = new google.maps.InfoWindow();
 
 	// Create the search box and link it to the UI element.
@@ -224,47 +228,32 @@ function updateGuest(_data) {
 }
 
 function GeoCoding(_data,element) {
-	var keyapi = "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI ";
-	var URL = "maps.googleapis.com";
-    var _url = URL + "/maps/api/geocode/json?" + JSON.stringify({address:_data,key:keyapi});
-    var jqxhr = $.ajax({
-        url: _url,
-        type: 'GET',
-        datatype: 'json',
-        contentType: 'application/json',
-        timeout: 30 * 1000
-    })
-	.done(function (data, textStatus, jqXHR) {
-		console.log(data);
-		var v = data.results[0].geometry.location;
-		element.value= v.lat + ','+v.lng;
-	})
-	.fail(function (jqXHR, textStatus, errorThrown) {
-		console.log(jqXHR);
-		console.log(textStatus);
-		console.log(errorThrown);
-	});
+	var address = _data;
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == 'OK') {
+		  var v = results[0].geometry.location;
+		element.value= v.lat() + ','+v.lng();
+        
+      } else {
+        console.log('Geocode was not successful for the following reason: ' + status);
+      }
+    });
 }
 
 function ReverseGeoCoding(_data,element) {
-	var keyapi = "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI ";
-	var URL = "maps.googleapis.com";
-    var _url = URL + "/maps/api/geocode/json?" + JSON.stringify({latlng:_data,key:keyapi});
-    var jqxhr = $.ajax({
-        url: _url,
-        type: 'GET',
-        datatype: 'json',
-        contentType: 'application/json',
-        timeout: 30 * 1000
-    })
-	.done(function (data, textStatus, jqXHR) {
-		console.log(data);
-		var v = data.results[0].formatted_address;
-		element.value= v;
-	})
-	.fail(function (jqXHR, textStatus, errorThrown) {
-		console.log(jqXHR);
-		console.log(textStatus);
-		console.log(errorThrown);
-	});
+	var latlngStr = _data.split(',', 2);
+	var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
+	  geocoder.geocode({'location': latlng}, function(results, status) {
+		if (status === 'OK') {
+		  if (results[1]) {
+			var v = results[1].formatted_address;
+			element.value= v;
+		  } else {
+			 console.log('No results found');
+		  }
+		} else {
+		  console.log('Geocoder failed due to: ' + status);
+		}
+	  });
+
 }
