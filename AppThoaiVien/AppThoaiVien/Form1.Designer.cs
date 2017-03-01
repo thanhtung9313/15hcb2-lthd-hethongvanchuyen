@@ -39,15 +39,17 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.txtHoTen = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
+			this.btnGoi = new System.Windows.Forms.Button();
+			this.btnXem = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnGui
 			// 
-			this.btnGui.Location = new System.Drawing.Point(137, 256);
+			this.btnGui.Location = new System.Drawing.Point(13, 256);
 			this.btnGui.Name = "btnGui";
-			this.btnGui.Size = new System.Drawing.Size(125, 23);
+			this.btnGui.Size = new System.Drawing.Size(125, 33);
 			this.btnGui.TabIndex = 5;
-			this.btnGui.Text = "Gửi";
+			this.btnGui.Text = "Đăng ký";
 			this.btnGui.UseVisualStyleBackColor = true;
 			this.btnGui.Click += new System.EventHandler(this.btnGui_Click);
 			// 
@@ -141,12 +143,34 @@
 			this.label5.TabIndex = 15;
 			this.label5.Text = "Họ tên";
 			// 
+			// btnGoi
+			// 
+			this.btnGoi.Location = new System.Drawing.Point(186, 257);
+			this.btnGoi.Name = "btnGoi";
+			this.btnGoi.Size = new System.Drawing.Size(125, 32);
+			this.btnGoi.TabIndex = 16;
+			this.btnGoi.Text = "Gọi xe";
+			this.btnGoi.UseVisualStyleBackColor = true;
+			this.btnGoi.Click += new System.EventHandler(this.btnGoi_Click);
+			// 
+			// btnXem
+			// 
+			this.btnXem.Location = new System.Drawing.Point(348, 256);
+			this.btnXem.Name = "btnXem";
+			this.btnXem.Size = new System.Drawing.Size(125, 33);
+			this.btnXem.TabIndex = 17;
+			this.btnXem.Text = "Xem lịch sử";
+			this.btnXem.UseVisualStyleBackColor = true;
+			this.btnXem.Click += new System.EventHandler(this.btnXem_Click);
+			// 
 			// Form1
 			// 
 			this.AcceptButton = this.btnGui;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(485, 292);
+			this.ClientSize = new System.Drawing.Size(485, 299);
+			this.Controls.Add(this.btnXem);
+			this.Controls.Add(this.btnGoi);
 			this.Controls.Add(this.txtHoTen);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.txtSDT);
@@ -179,6 +203,8 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox txtHoTen;
 		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Button btnGoi;
+		private System.Windows.Forms.Button btnXem;
 	}
 }
 

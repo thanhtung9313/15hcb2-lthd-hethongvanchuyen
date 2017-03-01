@@ -6,7 +6,8 @@
   "config": {
     "port": "9000",
     "dbcon": "mongodb://127.0.0.1:27017/map",
-    "apikey": "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI "
+    "apikey": "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI ",
+	"limit": "100"
   },
   "scripts": {
     "start": "node index.js"

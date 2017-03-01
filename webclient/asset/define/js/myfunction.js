@@ -1,4 +1,5 @@
 ﻿var URL = "http://localhost:9000/";
+var update;
 function DangKy(_name,_pass, _phone, _address,_type) {
     var _url = URL + "api/map/register-taixe";
     var _data = {
@@ -49,6 +50,9 @@ function DangNhap(_phone,_pass) {
             console.log(data);
             if (data.Error === 0) {
                 alert(data.Text);
+				update = setInterval(function(){
+					CapNhat($("#txt_SDT").val(),$("#txt_MatKhau").val(),$("#txt_DiaChi").val());
+					},5000);
 				$("#txt_SDT").val(data.Data.DienThoai);
 				$("#txt_Ten").val(data.Data.HoTen);
 				$("#txt_DiaChi").val(data.Data.DiaChi);
@@ -84,6 +88,7 @@ function DangXuat(_phone,_pass) {
             if (data.Error === 0) {
                 alert(data.Text);
 				logoutsend(_data.DienThoai);
+				clearInterval(update);
             }
             else {
                 alert(data.Text);
@@ -113,7 +118,7 @@ function CapNhat(_phone,_pass, _address) {
         .done(function (data, textStatus, jqXHR) {
             console.log(data);
             if (data.Error === 0) {
-                alert(data.Text);
+                //alert(data.Text);
             }
             else {
                 alert(data.Text);
@@ -135,9 +140,8 @@ $(document).ready(function () {
 	$("#btn_CapNhat").click(function () {
         CapNhat($("#txt_SDT").val(),$("#txt_MatKhau").val(),$("#txt_DiaChi").val());
     });
-	$(document).ready(function () {
-		$("#btn_DangKy").click(function () {
-			DangKy($("#txt_Ten").val(),$("#txt_MatKhau").val(),$("#txt_SDT").val(),$("#txt_DiaChi").val(),$("input[name='optradio']:checked").val());
-		});
+	$("#btn_DangKy").click(function () {
+		DangKy($("#txt_Ten").val(),$("#txt_MatKhau").val(),$("#txt_SDT").val(),$("#txt_DiaChi").val(),$("input[name='optradio']:checked").val());
 	});
+	
 });

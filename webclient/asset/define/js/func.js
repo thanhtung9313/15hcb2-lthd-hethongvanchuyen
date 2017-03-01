@@ -23,9 +23,26 @@ function initAutocomplete() {
 
 	// Create the search box and link it to the UI element.
 	var input = document.getElementById('pac-input');
+	var pos = document.getElementById('pos-input');
+	var addr = document.getElementById('addr-input');
+	var btnChange = document.getElementById('change-input');
 	var searchBox = new google.maps.places.SearchBox(input);
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(pos);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(btnChange);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(addr);
+	
+	
+	//btn change-input
+	btnChange.addEventListener("click",function(){
+		if(pos.value.length != 0){
+			ReverseGeoCoding(pos.value,addr);
+		}
+		if(addr.value.length != 0){
+			GeoCoding(addr.value,pos);
+		}
+	});
+	
 	// Bias the SearchBox results towards current map's viewport.
 	map.addListener('bounds_changed', function() {
 		searchBox.setBounds(map.getBounds());
@@ -114,7 +131,7 @@ function loadBiker() {
 			map.setZoom(17);
 		}
 		else {
-			alert(data.Text);
+			//alert(data.Text);
 		}
 	})
 	.fail(function (jqXHR, textStatus, errorThrown) {
@@ -162,14 +179,14 @@ function loadGuest() {
 				});
 				
 				google.maps.event.addListener(marker, 'dragend', function() {
-					var data = { lat: this.getPosition().lat(), lng: this.getPosition().lng(), khach: guest}
+					var data = { lat: this.getPosition().lat(), lng: this.getPosition().lng(), DienThoai: guest.DienThoai}
 					updateGuest(data);
 				});
 			});
 			map.setZoom(17);
 		}
 		else {
-			alert(data.Text);
+			//alert(data.Text);
 		}
 	})
 	.fail(function (jqXHR, textStatus, errorThrown) {
@@ -193,11 +210,57 @@ function updateGuest(_data) {
 	.done(function (data, textStatus, jqXHR) {
 		console.log(data);
 		if (data.Error === 0) {
-			alert(data.Text);
+			//alert(data.Text);
 		}
 		else {
-			alert(data.Text);
+			//alert(data.Text);
 		}
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+		console.log(jqXHR);
+		console.log(textStatus);
+		console.log(errorThrown);
+	});
+}
+
+function GeoCoding(_data,element) {
+	var keyapi = "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI ";
+	var URL = "maps.googleapis.com";
+    var _url = URL + "/maps/api/geocode/json?" + JSON.stringify({address:_data,key:keyapi});
+    var jqxhr = $.ajax({
+        url: _url,
+        type: 'GET',
+        datatype: 'json',
+        contentType: 'application/json',
+        timeout: 30 * 1000
+    })
+	.done(function (data, textStatus, jqXHR) {
+		console.log(data);
+		var v = data.results[0].geometry.location;
+		element.value= v.lat + ','+v.lng;
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+		console.log(jqXHR);
+		console.log(textStatus);
+		console.log(errorThrown);
+	});
+}
+
+function ReverseGeoCoding(_data,element) {
+	var keyapi = "AIzaSyBxNtYDxagsRSz1RBcbGL_F8Qx1kXYrWuI ";
+	var URL = "maps.googleapis.com";
+    var _url = URL + "/maps/api/geocode/json?" + JSON.stringify({latlng:_data,key:keyapi});
+    var jqxhr = $.ajax({
+        url: _url,
+        type: 'GET',
+        datatype: 'json',
+        contentType: 'application/json',
+        timeout: 30 * 1000
+    })
+	.done(function (data, textStatus, jqXHR) {
+		console.log(data);
+		var v = data.results[0].formatted_address;
+		element.value= v;
 	})
 	.fail(function (jqXHR, textStatus, errorThrown) {
 		console.log(jqXHR);
